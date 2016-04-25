@@ -61,6 +61,13 @@ module.exports = class Deque{
 
     }
     pop_back(){
+        let elem = this.back.elems[this.back.index--];
+        if(this.back.index < 0){
 
+            // TODO: empty/ going into wrong-order territory
+            this.back = this.back.before;
+            this.back.after = null;
+        }
+        return elem;
     }
 }
