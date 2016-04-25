@@ -42,7 +42,7 @@ module.exports = class Deque{
         this.back.elems[this.back.index++] = elem;
     }
     push_front(elem){
-        if(this.front.index <= 0){
+        if(this.front.index < 0){
             let newFront = {
                 elems: new Array(this.CHUNK_SIZE),
                 before: null,
@@ -52,7 +52,7 @@ module.exports = class Deque{
             this.front.before = newFront;
             this.front = newFront;
         }
-        this.front.elems[this.front.index++] = elem;
+        this.front.elems[this.front.index--] = elem;
     }
     pop(){
         this.pop_back();
