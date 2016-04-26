@@ -7,17 +7,10 @@ module.exports = class Deque{
             elems: new Array(this.CHUNK_SIZE),
             before: null,
             after: null,
-            index: this.CHUNK_SIZE - 1,
+            front_index: 0,
+            back_index: 0
         };
-        this.back = {
-            elems: new Array(this.CHUNK_SIZE),
-            before: null,
-            after: null,
-            index: 0
-        };
-
-        this.front.after = this.back;
-        this.back.before = this.front;
+        this.back = this.front
 
         this.size = 0;
     }
@@ -26,48 +19,57 @@ module.exports = class Deque{
     }
     push(elem){
         this.push_back(elem);
-        this.size++;
     }
     push_back(elem){
-        if(this.back.index >= this.CHUNK_SIZE){
+        if(this.back.back_index >= this.CHUNK_SIZE){
             let newBack = {
                 elems: new Array(this.CHUNK_SIZE),
                 before: this.back,
                 after: null,
-                index: 0
+                back_index: 0,
+                front_index: 0
             };
             this.back.after = newBack;
             this.back = newBack;
         }
-        this.back.elems[this.back.index++] = elem;
+        this.back.elems[this.back.back_index++] = elem;
+        this.size++;
     }
     push_front(elem){
-        if(this.front.index < 0){
+        if(this.front.front_index < 0){
             let newFront = {
                 elems: new Array(this.CHUNK_SIZE),
                 before: null,
                 after: this.front,
-                index: this.CHUNK_SIZE - 1
+                front_index: this.CHUNK_SIZE - 1,
+                back_index: this.CHUNK_SIZE - 1
             };
             this.front.before = newFront;
             this.front = newFront;
         }
-        this.front.elems[this.front.index--] = elem;
+        this.front.elems[this.front.front_index--] = elem;
+        this.size++;
     }
     pop(){
         this.pop_back();
     }
     pop_front(){
-
+        this.size--;
     }
     pop_back(){
-        let elem = this.back.elems[this.back.index--];
-        if(this.back.index < 0){
-
-            // TODO: empty/ going into wrong-order territory
-            this.back = this.back.before;
-            this.back.after = null;
+        let elem = this.back.elems[this.back.back_index--];
+        if(this.back.back_index <= this.back.front_index){
+            // If there is no node before, then we're at the end of the line
+            if(this.back.before === null){
+                // If they keep popping an empty array, this counter should remain where it is
+                this.back.back_index = this.back.front_index;
+            }
+            else{
+                this.back = this.back.before;
+                this.back.after = null;
+            }
         }
+        this.size--;
         return elem;
     }
 }
